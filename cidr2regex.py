@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-
+#!/usr/bin/python
+''' Not my script, found on the Internet, and rediscovered on my hard drive
+'''
+from __future__ import division
+from __future__ import print_function
 import sys
 
 def cidr_to_regex(cidr):
@@ -19,6 +22,9 @@ def cidr_to_regex(cidr):
 
         from math import log10
         exp = int(log10(upper - lower))
+        if (int(str(lower)[-1]) > int(str(upper)[-1]) and exp == 0):
+            # increasing exp due to base 10 wrap to next exp"
+            exp += 1
         delta = 10 ** exp
 
         if lower == 0 and upper == 255:
@@ -38,7 +44,7 @@ def cidr_to_regex(cidr):
             return val
 
         def gen_classes():
-            floor_ = lambda x: int(round(x / delta, 0) * delta)
+            floor_ = lambda x: int(round(x // delta, 0) * delta)
 
             xs = range(floor_(upper) - delta, floor_(lower), -delta)
             for x in map(str, xs):
@@ -47,7 +53,7 @@ def cidr_to_regex(cidr):
             yield regex(lower, floor_(lower) + (delta - 1))
             yield regex(floor_(upper), upper)
 
-        return '(' + ('|'.join(gen_classes())) + ')'
+        return "({})".format('|'.join(gen_classes()))
 
     def get_parts():
         for x in range(24, -1, -8):
